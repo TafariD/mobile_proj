@@ -3,8 +3,10 @@ package a150dev.bluelightmobile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +37,7 @@ public class MapsActivity extends FragmentActivity implements
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private LatLng latLng;
+    private int REQUEST_LOCATION = 0;
     public static final String TAG = MapsActivity.class.getSimpleName();
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000; //For errors
 
@@ -89,7 +92,7 @@ public class MapsActivity extends FragmentActivity implements
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    @Override //This boiler plate code was here to when the activity was created. May delete later.
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
@@ -103,15 +106,30 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override //Actions taken when location connection is established.
     public void onConnected(Bundle bundle) {
+
+        Location location = null;
         //Wrapped in a try/catch in case location throws an exeception for some reason.
         try {
-            Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Check Permissions Now
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION);
+            } else {
+                // permission has been granted, continue as usual
+                location =
+                        LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            }
 
             Log.i(TAG, "Location services connected.");
 
             //Just in case the phone didn't already have a past location stored, we prepare to call
             //get an updated one.
             if (location == null) {
+                Log.i(TAG, "Requesting location...");
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
                                                                             mLocationRequest, this);
             }
@@ -121,6 +139,8 @@ public class MapsActivity extends FragmentActivity implements
 
         } catch (SecurityException e) {
             Log.i(TAG,"There is a problem with the GPS!");
+            Log.i(TAG, e.getMessage());
+
         }
     }
 
@@ -151,6 +171,7 @@ public class MapsActivity extends FragmentActivity implements
 
     // This is where we update the map once a new location is received.
     private void handleNewLocation(Location location) {
+
         Log.d(TAG, location.toString());
 
         double currentLatitude = location.getLatitude();
@@ -164,6 +185,26 @@ public class MapsActivity extends FragmentActivity implements
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
     }
 
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions,
+                                           int[] grantResults) {
+        if (requestCode == REQUEST_LOCATION) {
+            if(grantResults.length == 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // We can now safely use the API we requested access to
+                try {
+                    Location myLocation =
+                            LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                } catch (SecurityException e) {
+                    Log.i(TAG, e.getMessage());
+                }
+            } else {
+                // Permission was denied or request was cancelled
+                Log.i(TAG, "User said no!");
+            }
+        }
+    }
+
     // For now, this simple logs the location to the screen.
     public void doActivity(View view) {
 
@@ -174,10 +215,16 @@ public class MapsActivity extends FragmentActivity implements
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
 
-        Toast.makeText(
-                context,
-                "Lat " + latLng.latitude + " "
-                        + "Long " + latLng.longitude,
-                Toast.LENGTH_LONG).show();
+
+        if (latLng != null) {
+            Toast.makeText(
+                    context,
+                    "Lat " + latLng.latitude + " "
+                            + "Long " + latLng.longitude,
+                    Toast.LENGTH_LONG).show();
+
+        } else {
+            Toast.makeText(context, "Something is wrong.", Toast.LENGTH_LONG).show();
+        }
     }
 }
