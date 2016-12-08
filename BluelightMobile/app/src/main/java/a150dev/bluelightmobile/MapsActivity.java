@@ -428,7 +428,7 @@ public class MapsActivity extends FragmentActivity implements
 
                             } else {
 
-                                text = "Sending Location (\" + street_address + \") to Emergency Services";
+                                text = "Sending Location (" + street_address + ") to Emergency Services";
 
                                 Toast.makeText(MapsActivity.this,text,Toast.LENGTH_LONG).show();
 
