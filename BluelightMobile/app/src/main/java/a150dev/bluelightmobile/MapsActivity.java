@@ -470,7 +470,6 @@ public class MapsActivity extends FragmentActivity implements
                         }
                     });
 
-                }
                 mUiHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -481,7 +480,24 @@ public class MapsActivity extends FragmentActivity implements
                     }
                 });
             }
+
+                if (latLng != null) {
+
+                    // Send location to server here
+                    PostTask postDataTask = new PostTask();
+                    JSONObject location = new JSONObject();
+                    location.put("lat", latLng.latitude);
+                    location.put("lng", latLng.longitude);
+                    postDataTask.execute(location.toString());
+
+                    Toast.makeText(
+                            context,
+                            "Lat " + latLng.latitude + " "
+                                    + "Long " + latLng.longitude,
+                            Toast.LENGTH_LONG).show();
+                }
         };
+
 
         mWorkerThread.start();
         mWorkerThread.prepareHandler();
@@ -551,4 +567,35 @@ public class MapsActivity extends FragmentActivity implements
         return strAdd;
     }
 
+    public void postData(String location) {
+        HttpClient postClient = new DefaultHttpClient();
+        HttpPost postRequest = new HttpPost("https://bluelightmobile.herokuapp.com/");
+
+        try{
+
+            List nameValuePairs = new ArrayList();
+            nameValuePairs.add(new BasicNameValuePair("location", location));
+            postRequest.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+            HttpResponse response = postClient.execute(postRequest);
+
+        } catch (ClientProtocolException e) {
+
+        } catch (IOException e) {
+
+        }
+    }
+
+    private class PostTask extends AsyncTask<String, Integer, Long>{
+        @Override
+        protected Long doInBackground(String... locString) {
+            postData(locStrings[0]);
+            return null;
+        }
+
+        protected void onPostExecute(Long result) {
+            //say that it's done here instead of in main function
+        }
+    }
+}
 }
