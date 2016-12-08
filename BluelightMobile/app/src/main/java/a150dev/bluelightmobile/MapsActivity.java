@@ -352,13 +352,13 @@ public class MapsActivity extends FragmentActivity implements
 
             Log.i(TAG, "IN SENDING SMS IN ACTIVITY!");
 
-            if (phone1 == "") {
+            if (!phone1.equals("")) {
                 smsManager.sendTextMessage(phone1, null, msg, null, null);
             }
-            if (phone2 == "") {
+            if (!phone2.equals("")) {
                 smsManager.sendTextMessage(phone2, null, msg, null, null);
             }
-            if (phone3 == "") {
+            if (!phone3.equals("")) {
                 smsManager.sendTextMessage(phone3, null, msg, null, null);
             }
 
@@ -373,13 +373,13 @@ public class MapsActivity extends FragmentActivity implements
 
             SmsManager smsManager = SmsManager.getDefault();
 
-            if (phone1 == "") {
+            if (!phone1.equals("")) {
                 smsManager.sendTextMessage(phone1, null, msg, null, null);
             }
-            if (phone2 == "") {
+            if (!phone2.equals("")) {
                 smsManager.sendTextMessage(phone2, null, msg, null, null);
             }
-            if (phone3 == "") {
+            if (!phone3.equals("")) {
                 smsManager.sendTextMessage(phone3, null, msg, null, null);
             }
         }
@@ -407,7 +407,7 @@ public class MapsActivity extends FragmentActivity implements
                             SmsManager smsManager = SmsManager.getDefault();
                             String text;
 
-                            if (street_address == "") {
+                            if (street_address.equals("")) {
                                 text = "Sending Location \n(" + "Lat " + latLng.latitude + "  "
                                         + "Long " + latLng.longitude + ")\n to Emergency Services";
 
@@ -416,13 +416,13 @@ public class MapsActivity extends FragmentActivity implements
                                 text = "Current Location \n(" + "Lat " + latLng.latitude + "  "
                                         + "Long " + latLng.longitude + ")\n to Emergency Services";
 
-                                if (phone1 == "") {
+                                if (!phone1.equals("")) {
                                     smsManager.sendTextMessage(phone1, null, text, null, null);
                                 }
-                                if (phone2 == "") {
+                                if (!phone2.equals("")) {
                                     smsManager.sendTextMessage(phone2, null, text, null, null);
                                 }
-                                if (phone3 == "") {
+                                if (!phone3.equals("")) {
                                     smsManager.sendTextMessage(phone3, null, text, null, null);
                                 }
 
@@ -434,13 +434,13 @@ public class MapsActivity extends FragmentActivity implements
 
                                 text = "Current Location (" + street_address + ") to Emergency Services";
 
-                                if (phone1 == "") {
+                                if (!phone1.equals("")) {
                                     smsManager.sendTextMessage(phone1, null, text, null, null);
                                 }
-                                if (phone2 == "") {
+                                if (!phone2.equals("")) {
                                     smsManager.sendTextMessage(phone2, null, text, null, null);
                                 }
-                                if (phone3 == "") {
+                                if (!phone3.equals("")) {
                                     smsManager.sendTextMessage(phone3, null, text, null, null);
                                 }
                             }
