@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -30,13 +29,13 @@ public class MainActivity extends AppCompatActivity  {
         phonenum3 = sharedPref.getString("Phone3", defaultValue);
 
         if(phonenum1 != "") {
-            phone1.setHint(phonenum1);
+            phone1.setText(phonenum1);
         }
         if(phonenum2 != "") {
-            phone2.setHint(phonenum2);
+            phone2.setText(phonenum2);
         }
         if(phonenum3 != "") {
-            phone3.setHint(phonenum3);
+            phone3.setText(phonenum3);
         }
 
     }

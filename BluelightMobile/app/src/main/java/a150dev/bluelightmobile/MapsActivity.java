@@ -1,6 +1,5 @@
 package a150dev.bluelightmobile;
 
-import android.*;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -11,17 +10,13 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -39,9 +34,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import android.content.Context;
 import android.os.Handler;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.Locale;
@@ -64,12 +57,14 @@ public class MapsActivity extends FragmentActivity implements
     private int REQUEST_CALL_PHONE = 0;
     private int REQUEST_SEND_SMS = 0;
     private boolean active = false;
+    private boolean newlocation = false;
     public static final String TAG = MapsActivity.class.getSimpleName();
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000; //For errors
     private Button Signal_Button;
     private Handler mUiHandler = new Handler();
     private String phone1, phone2, phone3;
     private MyWorkerThread mWorkerThread;
+    private int count = 0;
 
     @Override //Initalizing everyting.
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +72,7 @@ public class MapsActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         Signal_Button = (Button) findViewById(R.id.doButton);
-        Signal_Button.setBackgroundColor(Color.GREEN);
+        Signal_Button.setBackgroundColor(Color.rgb(50, 225, 50));
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -108,10 +103,11 @@ public class MapsActivity extends FragmentActivity implements
                 .addApi(AppIndex.API).build();
 
         // Create the LocationRequest object
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
-                .setFastestInterval(1 * 1000); // 1 second, in milliseconds
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(10 * 1000);        // 10 seconds, in milliseconds
+        mLocationRequest.setFastestInterval(1000); // 1 second, in milliseconds
+        mLocationRequest.setSmallestDisplacement(5);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -130,6 +126,17 @@ public class MapsActivity extends FragmentActivity implements
                     new String[]{Manifest.permission.SEND_SMS},
                     REQUEST_SEND_SMS);
         }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Check Permissions Now
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION);
+        }
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     }
 
@@ -201,6 +208,7 @@ public class MapsActivity extends FragmentActivity implements
             }
 
             Log.i(TAG, "Location services connected.");
+            newlocation = true;
 
             //Just in case the phone didn't already have a past location stored, we prepare to call
             //get an updated one.
@@ -242,13 +250,15 @@ public class MapsActivity extends FragmentActivity implements
 
     @Override //Make sure we update the map when the location changes.
     public void onLocationChanged(Location location) {
-        handleNewLocation(location);
-    }
+
+        handleNewLocation(location);}
 
     // This is where we update the map once a new location is received.
     private void handleNewLocation(Location location) {
 
         Log.d(TAG, location.toString());
+        newlocation = true;
+        Log.i(TAG, "New location set to true");
 
         double currentLatitude = location.getLatitude();
         double currentLongitude = location.getLongitude();
@@ -322,7 +332,7 @@ public class MapsActivity extends FragmentActivity implements
         CharSequence text;
         if (!active) {
             Signal_Button.setText("Stop Signaling");
-            Signal_Button.setBackgroundColor(Color.RED);
+            Signal_Button.setBackgroundColor(Color.rgb(225, 50, 50));
             text = "Signal Recieved! Starting transmission";
             active = !active;
 
@@ -362,11 +372,12 @@ public class MapsActivity extends FragmentActivity implements
                 smsManager.sendTextMessage(phone3, null, msg, null, null);
             }
 
-            Log.i(TAG, "WE OK!");
+            count = 25; //You can't say the driver isn't responsible if he follows the instructions.
+
         } else {
             text = "Ending transmission!";
             Signal_Button.setText("Signal");
-            Signal_Button.setBackgroundColor(Color.GREEN);
+            Signal_Button.setBackgroundColor(Color.rgb(50, 225, 50));
             active = !active;
 
             String msg = "The danger has passed, I'm ok.";
@@ -396,7 +407,8 @@ public class MapsActivity extends FragmentActivity implements
 
                 while (active) {
                     try {
-                        TimeUnit.SECONDS.sleep(10);
+                        TimeUnit.SECONDS.sleep(1);
+                        count++;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -407,42 +419,53 @@ public class MapsActivity extends FragmentActivity implements
                             SmsManager smsManager = SmsManager.getDefault();
                             String text;
 
-                            if (street_address.equals("")) {
-                                text = "Sending Location \n(" + "Lat " + latLng.latitude + "  "
-                                        + "Long " + latLng.longitude + ")\n to Emergency Services";
+                            if ((newlocation) || (count > 60)) {
 
-                                Toast.makeText(MapsActivity.this,text,Toast.LENGTH_LONG).show();
+                                if (street_address.equals("")) {
+                                    text = "Sending Location \n(" + "Lat " + latLng.latitude + "  "
+                                            + "Long " + latLng.longitude + ")\n to Emergency Services";
 
-                                text = "Current Location \n(" + "Lat " + latLng.latitude + "  "
-                                        + "Long " + latLng.longitude + ")\n to Emergency Services";
+                                    Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
 
-                                if (!phone1.equals("")) {
-                                    smsManager.sendTextMessage(phone1, null, text, null, null);
+                                    text = "Current Location \n(" + "http://maps.google.com/?q=" +
+                                            latLng.latitude  + "," + latLng.longitude +
+                                            ")";
+
+                                    if (!phone1.equals("")) {
+                                        smsManager.sendTextMessage(phone1, null, text, null, null);
+                                    }
+                                    if (!phone2.equals("")) {
+                                        smsManager.sendTextMessage(phone2, null, text, null, null);
+                                    }
+                                    if (!phone3.equals("")) {
+                                        smsManager.sendTextMessage(phone3, null, text, null, null);
+                                    }
+
+                                } else {
+
+                                    text = "Sending Location (" + street_address + ") to Emergency Services";
+
+                                    Toast.makeText(MapsActivity.this, text, Toast.LENGTH_LONG).show();
+
+                                    text = "Current Location (" + street_address + "). \n See map here:"
+                                            + " \n(" + "http://maps.google.com/?q=" + latLng.latitude
+                                            + "," + latLng.longitude + ")";
+
+                                    if (!phone1.equals("")) {
+                                        smsManager.sendTextMessage(phone1, null, text, null, null);
+                                    }
+                                    if (!phone2.equals("")) {
+                                        smsManager.sendTextMessage(phone2, null, text, null, null);
+                                    }
+                                    if (!phone3.equals("")) {
+                                        smsManager.sendTextMessage(phone3, null, text, null, null);
+                                    }
                                 }
-                                if (!phone2.equals("")) {
-                                    smsManager.sendTextMessage(phone2, null, text, null, null);
-                                }
-                                if (!phone3.equals("")) {
-                                    smsManager.sendTextMessage(phone3, null, text, null, null);
-                                }
-
+                                newlocation = false;
+                                Log.i(TAG, "Sent message ... New location set to false");
+                                count = 0;
                             } else {
-
-                                text = "Sending Location (" + street_address + ") to Emergency Services";
-
-                                Toast.makeText(MapsActivity.this,text,Toast.LENGTH_LONG).show();
-
-                                text = "Current Location (" + street_address + ") to Emergency Services";
-
-                                if (!phone1.equals("")) {
-                                    smsManager.sendTextMessage(phone1, null, text, null, null);
-                                }
-                                if (!phone2.equals("")) {
-                                    smsManager.sendTextMessage(phone2, null, text, null, null);
-                                }
-                                if (!phone3.equals("")) {
-                                    smsManager.sendTextMessage(phone3, null, text, null, null);
-                                }
+                                Log.i(TAG, "No new location");
                             }
                         }
                     });
