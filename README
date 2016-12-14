@@ -1,1 +1,17 @@
+Developed by Zabir Islam and Tafari Duncan
 
+A better distress call system for Tufts University
+
+*********
+NOTE: This version does not send TUPD your up to date location data, we are working on that feature for a future release. When it does, we will include a privacy policy for that permission. We do not currently store your location, and only send it to your listed contacts when the signal button is pressed.
+**********
+
+Our app features a one touch panic button that calls the Tufts University Police Department (TUPD) for you and notifies up to three contacts when that you are in danger. It would provide up to date location information to your three emergency contacts, and continually notifies the user of their location for easy reporting to the university police.
+
+The idea came from the fact that TUPD has “bluelights” installed at particular locations across campus. These allow members of the Tufts community to contact TUPD quickly and efficiently in case of an emergency from locations around campus.
+
+But having these bluelights installed in particular locations comes with an obvious limitation: if something happens to you, and you can’t get to a bluelight location, the system is ineffective. Furthermore, there a situation could arise where it is difficult to call them and tell them where you are.
+
+To resolve this, we are built a Bluelight mobile app that allows you to notify TUPD and several emergency contacts of your situation and location with a quick click on your smartphone.
+
+NOTE: This version does not send TUPD your up to date location data, we are working on that feature for a future release.
