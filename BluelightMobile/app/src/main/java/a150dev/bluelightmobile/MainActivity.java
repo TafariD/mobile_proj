@@ -1,5 +1,13 @@
 package a150dev.bluelightmobile;
 
+/**
+ * Created by Tafari on 10/11/2016.
+ *
+ * This main activity takes in the user number preferences and passes it to the Map Activity.
+ *
+ */
+
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,7 +16,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
+
 public class MainActivity extends AppCompatActivity  {
+
+    // For debugging
+    // public static final String TAG = MainActivity.class.getSimpleName();
 
     EditText phone1, phone2, phone3;
     String phonenum1,phonenum2,phonenum3;
@@ -16,6 +30,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override //Initializing the app and the main view.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         phone1   = (EditText)findViewById(R.id.editContact1);

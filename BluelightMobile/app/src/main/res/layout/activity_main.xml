@@ -69,7 +69,9 @@
         android:onClick="doButton"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/welcometext"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        style="@style/BlueButtonStyle" />
+
 
 
 </RelativeLayout>

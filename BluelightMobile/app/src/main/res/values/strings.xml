@@ -3,10 +3,9 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_menu">Menu</string>
     <string name="welcome">Welcome to Bluelight Mobile. This application is currently in beta.
-                           Note: It will NOT call the Tufts University Police Department, but
+                           Note: It WILL call the Tufts University Police Department AND
                            it will notify your contacts if you press the Signal button to call
                            for help.</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

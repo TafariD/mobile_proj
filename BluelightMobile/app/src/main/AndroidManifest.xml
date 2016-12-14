@@ -8,6 +8,7 @@ Google Maps Android API v2, but are recommended.
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
 
@@ -17,13 +18,16 @@ Google Maps Android API v2, but are recommended.
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity$MapsActivity" />
+        <activity android:name=".MapsActivity"
+                  android:label="@string/title_activity_maps"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -35,15 +39,6 @@ Google Maps Android API v2, but are recommended.
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity
-            android:name=".NavaActivity"
-            android:label="@string/title_activity_nava"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme"
@@ -52,12 +47,14 @@ Google Maps Android API v2, but are recommended.
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        </activity>
+        <service android:name=".MyService"
+            android:enabled="true"/>
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="8d0f15d166aab7a7efad5e4e971326adf786f2b1" />
     </application>
-
-
 </manifest>
